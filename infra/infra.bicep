@@ -7,12 +7,15 @@ param staticWebAppName string
 @description('Location for the Static Web App')
 param location string = resourceGroup().location
 
-resource staticWebApp 'Microsoft.Web/staticSites@2022-09-01' = {
+resource staticWebApp 'Microsoft.Web/staticSites@2024-11-01' = {
   name: staticWebAppName
   location: location
   sku: {
     name: 'Free'
     tier: 'Free'
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 

@@ -38,39 +38,39 @@ jobs:
 
       - name: Deploy Static Web App RG
         run: |
-          az group create --name "$AZURE_RESOURCE_GROUP" --location "$AZURE_LOCATION"
+          az group create --name "${{env.AZURE_RESOURCE_GROUP}}" --location "${{env.AZURE_LOCATION}}"
       
       - name: Deploy Static Web App infra (Bicep)
         run: |
           az deployment group create \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --resource-group "${{env.AZURE_RESOURCE_GROUP}}" \
             --template-file infra/infra.bicep \
-            --parameters staticWebAppName="$AZURE_STATIC_WEBAPP_NAME" location="$AZURE_LOCATION"
+            --parameters staticWebAppName="${{env.AZURE_STATIC_WEBAPP_NAME}}" location="${{env.AZURE_LOCATION}}"
 
       - name: Register Azure AD App (Entra ID)
         id: registerapp
         run: |
-          APP_ID=$(az ad app create --display-name "$ENTRA_APP_NAME" --query appId -o tsv)
-          az ad app update --id $APP_ID --web-redirect-uris "https://${AZURE_STATIC_WEBAPP_NAME}.azurestaticapps.net/.auth/login/aad/callback"
-          echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
+          APP_ID=$(az ad app create --display-name "${{env.ENTRA_APP_NAME}}" --query appId -o tsv)
+          az ad app update --id ${APP_ID} --web-redirect-uris "https://${{env.AZURE_STATIC_WEBAPP_NAME}}.azurestaticapps.net/.auth/login/aad/callback"
+          echo "app_id=${APP_ID}" >> $GITHUB_OUTPUT
 
       - name: Update MSAL clientId in script.js
         run: |
-          sed -i "s/clientId: \"<YOUR_CLIENT_ID>\"/clientId: \"${{ steps.registerapp.outputs.app_id }}\"/g" script.js
+          sed -i "s/clientId: \"<YOUR_CLIENT_ID>\"/clientId: \"${{steps.registerapp.outputs.app_id}}\"/g" script.js
 
       - name: Retrieve Static Web Apps Token
         id: swa_token
         run: |
-          SWA_CLI_DEPLOYMENT_TOKEN=$(az staticwebapp deployment token --name $AZURE_STATIC_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --query "deploymentToken" -o tsv)
+          SWA_CLI_DEPLOYMENT_TOKEN=$(az staticwebapp deployment token --name "${{env.AZURE_STATIC_WEBAPP_NAME}}" --resource-group "${{env.AZURE_RESOURCE_GROUP}}" --query "deploymentToken" -o tsv)
           echo "SWA_CLI_DEPLOYMENT_TOKEN=$SWA_CLI_DEPLOYMENT_TOKEN" >> $GITHUB_ENV
 
       - name: Deploy static files to Static Web App
         uses: Azure/static-web-apps-deploy@v1
         env: 
-          SWA_CLI_DEPLOYMENT_TOKEN: ${{ steps.swa_token.outputs.SWA_CLI_DEPLOYMENT_TOKEN }}
+          SWA_CLI_DEPLOYMENT_TOKEN: ${{steps.swa_token.outputs.SWA_CLI_DEPLOYMENT_TOKEN}}
         with:
-          azure_static_web_apps_api_token: ${{ env.SWA_CLI_DEPLOYMENT_TOKEN  }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          azure_static_web_apps_api_token: ${{env.SWA_CLI_DEPLOYMENT_TOKEN}}
+          repo_token: "${{secrets.GITHUB_TOKEN}}"
           action: "upload"
           app_location: "."
           output_location: "."
