@@ -42,11 +42,11 @@ jobs:
       
       - name: Deploy Static Web App infra (Bicep)
         run: |
-          deploymentOutput=`az deployment group create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --template-file ./main.bicep --parameters staticWebAppName="${{env.AZURE_STATIC_WEBAPP_NAME}}" location="${{env.AZURE_LOCATION}}"
+          deploymentOutput=`az deployment group create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --template-file ./main.bicep --parameters staticWebAppName="${{env.AZURE_STATIC_WEBAPP_NAME}}" location="${{env.AZURE_LOCATION}}"`
           echo "deploymentOutput:"
           echo $deploymentOutput
           echo " "
-          
+
       - name: Register Azure AD App (Entra ID)
         id: registerapp
         run: |
