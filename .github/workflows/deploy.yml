@@ -64,6 +64,12 @@ jobs:
           SWA_CLI_DEPLOYMENT_TOKEN=$(az staticwebapp secrets list --name "${{env.AZURE_STATIC_WEBAPP_NAME}}" --query "properties.apiKey" -o tsv)
           echo "SWA_CLI_DEPLOYMENT_TOKEN=$SWA_CLI_DEPLOYMENT_TOKEN" >> $GITHUB_ENV
 
+      - name: Install Azure Static Web Apps CLI
+        run: |
+          swa version
+          npm install -g @azure/static-web-apps-cli
+          swa version
+
       - name: Deploy static files to Static Web App
         uses: Azure/static-web-apps-deploy@v1
         env:
