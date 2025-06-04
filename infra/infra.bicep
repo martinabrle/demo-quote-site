@@ -17,5 +17,6 @@ resource staticSite 'Microsoft.Web/staticSites@2023-12-01' = {
     enterpriseGradeCdnStatus: 'Disabled'
   }
 }
+output staticSiteName string = staticSite.name
 output staticSiteUrl string = staticSite.properties.defaultHostname
 output staticSiteId string = staticSite.id

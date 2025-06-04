@@ -62,7 +62,7 @@ jobs:
         id: swa_token
         run: |
           SWA_CLI_DEPLOYMENT_TOKEN=$(az staticwebapp secrets list --name "${{env.AZURE_STATIC_WEBAPP_NAME}}" --query "properties.apiKey" -o tsv)
-          echo "Test only - SWA_CLI_DEPLOYMENT_TOKEN:${$SWA_CLI_DEPLOYMENT_TOKEN}"
+          echo "Test only - SWA_CLI_DEPLOYMENT_TOKEN:${SWA_CLI_DEPLOYMENT_TOKEN}"
           # SWA_CLI_DEPLOYMENT_TOKEN=$(az staticwebapp deployment token --name "${{env.AZURE_STATIC_WEBAPP_NAME}}" --resource-group "${{env.AZURE_RESOURCE_GROUP}}" --query "deploymentToken" -o tsv)
           echo "SWA_CLI_DEPLOYMENT_TOKEN=$SWA_CLI_DEPLOYMENT_TOKEN" >> $GITHUB_ENV
 
