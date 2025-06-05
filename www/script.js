@@ -18,19 +18,21 @@ const msalConfig = {
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 
 // UI elements for login/logout
-const authContainer = document.createElement('div');
+const authContainer = document.getElementById('auth-container');
+authContainer.classList.add('auth-container');
+
 const loginButton = document.createElement('button');
 loginButton.textContent = 'Sign in with Microsoft';
 const logoutButton = document.createElement('button');
 logoutButton.textContent = 'Sign out';
+
 authContainer.appendChild(loginButton);
-document.body.insertBefore(authContainer, document.body.firstChild);
 
 function updateAuthUI(account) {
     if (account) {
         loginButton.style.display = 'none';
         logoutButton.style.display = 'inline-block';
-        authContainer.appendChild(logoutButton);
+        if (!authContainer.contains(logoutButton)) authContainer.appendChild(logoutButton);
     } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';
