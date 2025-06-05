@@ -71,7 +71,7 @@ jobs:
       - name: Deploy the app to Static Web App
         id: swa_deploy
         run: |
-          swa deploy -./www --app-name "${{env.AZURE_STATIC_WEBAPP_NAME}}" --env production --deployment-token "${{steps.swa_token.outputs.SWA_CLI_DEPLOYMENT_TOKEN}}" --resource-group "${{env.AZURE_RESOURCE_GROUP}}"
+          swa deploy ./www --app-name "${{env.AZURE_STATIC_WEBAPP_NAME}}" --env production --deployment-token "${{steps.swa_token.outputs.SWA_CLI_DEPLOYMENT_TOKEN}}" --resource-group "${{env.AZURE_RESOURCE_GROUP}}"
         
       # - name: Deploy static files to Static Web App
       #   uses: Azure/static-web-apps-deploy@v1
