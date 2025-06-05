@@ -56,7 +56,7 @@ jobs:
 
       - name: Update MSAL clientId in script.js
         run: |
-          sed -i "s/clientId: \"<YOUR_CLIENT_ID>\"/clientId: \"${{steps.registerapp.outputs.app_id}}\"/g" script.js
+          sed -i "s/clientId: \"<YOUR_CLIENT_ID>\"/clientId: \"${{steps.registerapp.outputs.app_id}}\"/g" ./www/script.js
 
       - name: Retrieve Static Web Apps Token
         id: swa_token
