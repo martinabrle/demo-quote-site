@@ -53,7 +53,8 @@ jobs:
         id: registerapp
         run: |
           APP_ID=$(az ad app create --display-name "${{env.ENTRA_APP_NAME}}" --query appId -o tsv)
-          az ad app update --id ${APP_ID} --web-redirect-uris "https://${{steps.deployment.outputs.staticSiteUrl}}"
+          #az ad app update --id ${APP_ID} --web-redirect-uris "https://${{steps.deployment.outputs.staticSiteUrl}}"
+          az ad app update --id ${APP_ID} --set 'spa={"redirectUris": ["https://${{steps.deployment.outputs.staticSiteUrl}}/"]}'
           echo "app_id=${APP_ID}" >> $GITHUB_OUTPUT
 
       - name: Update MSAL clientId in script.js
