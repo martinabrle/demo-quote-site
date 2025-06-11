@@ -45,7 +45,7 @@ jobs:
         run: |
           deploymentOutput=`az deployment group create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --template-file ./infra/infra.bicep --parameters staticWebAppName="${{env.AZURE_STATIC_WEBAPP_NAME}}" location="${{env.AZURE_LOCATION}}"`
           
-          staticSiteUrl=`echo $deploymentOutput|jq ".properties.outputs.staticSiteUrl.value"`
+          staticSiteUrl=`echo $deploymentOutput|jq -r ".properties.outputs.staticSiteUrl.value"`
           echo "staticSiteUrl: ${staticSiteUrl}"
           echo "staticSiteUrl=${staticSiteUrl}" >> $GITHUB_OUTPUT
 
