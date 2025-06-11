@@ -41,17 +41,19 @@ jobs:
           az group create --name "${{env.AZURE_RESOURCE_GROUP}}" --location "${{env.AZURE_LOCATION}}"
       
       - name: Deploy Static Web App infra (Bicep)
+        id: deployment
         run: |
           deploymentOutput=`az deployment group create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --template-file ./infra/infra.bicep --parameters staticWebAppName="${{env.AZURE_STATIC_WEBAPP_NAME}}" location="${{env.AZURE_LOCATION}}"`
-          echo "deploymentOutput:"
-          echo $deploymentOutput
-          echo " "
+          
+          staticSiteUrl=`echo $deploymentOutput|jq ".properties.outputs.staticSiteUrl.value"`
+          echo "staticSiteUrl: ${staticSiteUrl}"
+          echo "staticSiteUrl=${staticSiteUrl}" >> $GITHUB_OUTPUT
 
       - name: Register Azure AD App (Entra ID)
         id: registerapp
         run: |
           APP_ID=$(az ad app create --display-name "${{env.ENTRA_APP_NAME}}" --query appId -o tsv)
-          az ad app update --id ${APP_ID} --web-redirect-uris "https://${{env.AZURE_STATIC_WEBAPP_NAME}}.azurestaticapps.net/.auth/login/aad/callback"
+          az ad app update --id ${APP_ID} --web-redirect-uris "https://${{steps.deployment.outputs.staticSiteUrl}}"
           echo "app_id=${APP_ID}" >> $GITHUB_OUTPUT
 
       - name: Update MSAL clientId in script.js

@@ -4,6 +4,9 @@ param location string = resourceGroup().location
 resource staticSite 'Microsoft.Web/staticSites@2023-12-01' = {
   name: staticWebAppName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   sku: {
     name: 'Standard'
     tier: 'Standard'
