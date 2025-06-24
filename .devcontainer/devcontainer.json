@@ -14,9 +14,20 @@
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
-			"settings": {},
+			"settings": {
+				"github.copilot.chat.codeGeneration.useInstructionFiles": true,
+				"github.copilot.nextEditSuggestions.enabled": true
+			},
 			"extensions": [
 				"streetsidesoftware.code-spell-checker"
+			]
+		},
+		// Configure properties specific to GitHub Codespaces.
+		"codespaces": {
+			"openFiles": [
+				"www/index.html",
+				"www/script.js",
+				"www/style.css"
 			]
 		}
 	},
