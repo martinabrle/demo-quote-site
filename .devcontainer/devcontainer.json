@@ -5,7 +5,10 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.12",
     // Memory and CPU limit for the container. More info: https://containers.dev/implementors/json_reference/#memory
-    "hostRequirements": {"cpus": 2, "memory": "4gb"},
+	"hostRequirements": {
+		"cpus": 2,
+		"memory": "4gb"
+	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
