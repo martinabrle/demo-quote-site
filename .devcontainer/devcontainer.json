@@ -26,7 +26,7 @@
 	// More info: https://containers.dev/implementors/json_reference/#port-attributes
 	"portsAttributes": {
 		"9000": {
-			"label": "Hello Remote World",
+			"label": "Random Quote - Development Portal",
 			"onAutoForward": "notify"
 		}
 	},
