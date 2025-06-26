@@ -1,0 +1,1 @@
+Can you please add a directory for infrastructure called infra and add a shell script called run-local.sh in there, which uses python to run a webserver locally and display the page?
