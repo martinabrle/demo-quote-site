@@ -29,7 +29,7 @@ logoutButton.textContent = 'Sign out';
 authContainer.appendChild(loginButton);
 
 // Check if user has admin role
-async function checkUserRoles(account) {
+async function checkUserAccess(account) {
     isAdmin = false; // Default to false, will be updated based on user roles
     try {
         const tokenRequest = {
@@ -77,7 +77,7 @@ function updateAuthUI(account) {
         if (!authContainer.contains(logoutButton)) authContainer.appendChild(logoutButton);
         
         // Check user roles for admin functionality
-        checkUserRoles(account);
+        checkUserAccess(account);
     } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';

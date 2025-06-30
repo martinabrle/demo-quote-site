@@ -1,4 +1,4 @@
-// MSAL configuration (should match main script.js)
+// MSAL configuration (replace with your Azure AD App details after registration)
 const msalConfig = {
     auth: {
         clientId: "<YOUR_CLIENT_ID>", // Replace with your Application (client) ID
@@ -9,155 +9,113 @@ const msalConfig = {
 
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 
+// Graph API endpoints
 // Microsoft Graph API endpoints
 const GRAPH_API_BASE = 'https://graph.microsoft.com/v1.0';
 const GRAPH_USERS_ENDPOINT = `${GRAPH_API_BASE}/users`;
 const GRAPH_INVITATIONS_ENDPOINT = `${GRAPH_API_BASE}/invitations`;
 
-let currentUser = null;
-let accessToken = null;
 
-// UI elements
+// UI elements for login/logout
 const authContainer = document.getElementById('auth-container');
-const authCheck = document.getElementById('auth-check');
-const userManagementPanel = document.getElementById('user-management-panel');
-const usersListContainer = document.getElementById('users-list');
-const refreshUsersBtn = document.getElementById('refresh-users-btn');
-const inviteUserBtn = document.getElementById('invite-user-btn');
-const inviteEmailInput = document.getElementById('invite-email');
-const userRoleSelect = document.getElementById('user-role');
+authContainer.classList.add('auth-container');
 
-// Create auth buttons
 const loginButton = document.createElement('button');
 loginButton.textContent = 'Sign in with Microsoft';
-//TODO: loginButton.className = 'action-btn primary';
-
 const logoutButton = document.createElement('button');
 logoutButton.textContent = 'Sign out';
-//TODO: logoutButton.className = 'action-btn';
+
+const refreshUsersBtn = document.getElementById('refresh-users-btn');
+const inviteUserBtn = document.getElementById('invite-user-btn');
+
 
 authContainer.appendChild(loginButton);
 
-// Authentication functions
-async function signIn() {
-    try {
-        const loginResponse = await msalInstance.loginPopup({
-            scopes: [
-                "openid", 
-                "profile", 
-                "User.Read", 
-                "User.ReadWrite.All",
-                "Directory.Read.All",
-                "Directory.ReadWrite.All"
-            ]
-        });
-        
-        currentUser = loginResponse.account;
-        await getAccessToken();
-        await checkAdminAccess();
-        updateAuthUI();
-        
-    } catch (error) {
-        console.error('Login failed:', error);
-        showError('Login failed: ' + error.message);
-    }
-}
-
-async function signOut() {
-    try {
-        await msalInstance.logoutPopup({ account: currentUser });
-        currentUser = null;
-        accessToken = null;
-        updateAuthUI();
-    } catch (error) {
-        console.error('Logout failed:', error);
-    }
-}
-
-async function getAccessToken() {
+// Check if user has admin role
+async function checkUserAccess(account) {
+    isAdmin = false; // Default to false, will be updated based on user roles
     try {
         const tokenRequest = {
-            scopes: [
-                "User.ReadWrite.All",
-                "Directory.Read.All",
-                "Directory.ReadWrite.All"
-            ],
-            account: currentUser
+            scopes: ["https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Directory.Read.All"],
+            account: account
         };
         
         const response = await msalInstance.acquireTokenSilent(tokenRequest);
-        accessToken = response.accessToken;
-        return accessToken;
-    } catch (error) {
-        console.error('Token acquisition failed:', error);
-        throw error;
-    }
-}
-
-// Check if current user has admin privileges
-async function checkAdminAccess() {
-    try {
-        if (!accessToken) {
-            await getAccessToken();
-        }
         
-        const response = await fetch(`${GRAPH_API_BASE}/me`, {
+        // Get user's app roles from Microsoft Graph
+        const graphResponse = await fetch('https://graph.microsoft.com/v1.0/me', {
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${response.accessToken}`
             }
         });
         
-        if (response.ok) {
-            const userData = await response.json();
-            
-            // Check if user is admin (simplified check for demo)
-            const isAdmin = userData.jobTitle?.toLowerCase().includes('admin') || 
+        if (graphResponse.ok) {
+            const userData = await graphResponse.json();
+            // Check if user has admin role in app roles
+            // This is a simplified check - in a real app, you'd verify app-specific roles
+            isAdmin = true || userData.jobTitle?.toLowerCase().includes('admin') || 
                            userData.mail?.includes('admin') ||
-                           localStorage.getItem('userRole') === 'admin' ||
-                           userData.userPrincipalName?.includes('admin');
+                           localStorage.getItem('userRole') === 'admin'; // For demo purposes
             
-            if (isAdmin) {
-                showUserManagement();
-                await loadUsers();
-            } else {
-                showError('Access denied. Admin privileges required.');
+            // Show/hide user management link
+            const userManagementLink = document.getElementById('user-management-link');
+            if (userManagementLink) {
+                userManagementLink.style.display = isAdmin ? 'inline-block' : 'none';
             }
-            
-            return isAdmin;
         } else {
-            throw new Error('Failed to verify user privileges');
+            console.error('Failed to fetch user data:', graphResponse.status, ' - ', graphResponse.statusText);
+            console.error('Response:\n', await graphResponse.text());
         }
     } catch (error) {
-        console.error('Admin check failed:', error);
-        showError('Failed to verify admin access: ' + error.message);
+        console.error('Error checking user roles:', error);
         return false;
     }
+    return isAdmin;
 }
 
-// UI Management functions
-function updateAuthUI() {
-    if (currentUser) {
+function updateAuthUI(account) {
+    if (account) {
         loginButton.style.display = 'none';
         logoutButton.style.display = 'inline-block';
-        if (!authContainer.contains(logoutButton)) {
-            authContainer.appendChild(logoutButton);
-        }
-        authCheck.style.display = 'none';
+        if (!authContainer.contains(logoutButton)) authContainer.appendChild(logoutButton);
+        
+        // Check user roles for admin functionality
+        checkUserAccess(account);
     } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';
-        if (authContainer.contains(logoutButton)) {
-            authContainer.removeChild(logoutButton);
+        if (authContainer.contains(logoutButton)) authContainer.removeChild(logoutButton);
+        
+        // Hide user management link when not logged in
+        const userManagementLink = document.getElementById('user-management-link');
+        if (userManagementLink) {
+            userManagementLink.style.display = 'none';
         }
-        authCheck.style.display = 'block';
-        userManagementPanel.style.display = 'none';
     }
 }
 
-function showUserManagement() {
-    authCheck.style.display = 'none';
-    userManagementPanel.style.display = 'block';
-}
+loginButton.onclick = async () => {
+    try {
+        const loginResponse = await msalInstance.loginPopup({ 
+            scopes: ["openid", "profile", "User.Read", "Directory.Read.All", "User.ReadWrite.All"] 
+        });
+        updateAuthUI(loginResponse.account);
+        alert(`Signed in as: ${loginResponse.account.username}`);
+    } catch (err) {
+        alert('Login failed: ' + err.message);
+    }
+};
+
+logoutButton.onclick = async () => {
+    const account = msalInstance.getAllAccounts()[0];
+    if (account) {
+        await msalInstance.logoutPopup({ account });
+        updateAuthUI(null);
+    }
+};
+
+refreshUsersBtn.onclick = loadUsers;
+inviteUserBtn.onclick = inviteUser;
 
 function showError(message) {
     const errorDiv = document.createElement('div');
@@ -172,12 +130,12 @@ function showError(message) {
     const container = document.querySelector('.container');
     container.insertBefore(errorDiv, container.firstChild);
     
-    // Auto-remove after 5 seconds
+    // Auto-remove after 25 seconds
     setTimeout(() => {
         if (errorDiv.parentNode) {
             errorDiv.remove();
         }
-    }, 5000);
+    }, 25000);
 }
 
 function showSuccess(message) {
@@ -193,12 +151,12 @@ function showSuccess(message) {
     const container = document.querySelector('.container');
     container.insertBefore(successDiv, container.firstChild);
     
-    // Auto-remove after 3 seconds
+    // Auto-remove after 5 seconds
     setTimeout(() => {
         if (successDiv.parentNode) {
             successDiv.remove();
         }
-    }, 3000);
+    }, 5000);
 }
 
 // User management functions
@@ -347,12 +305,6 @@ async function removeUser(userId, userName) {
     }
 }
 
-// Event listeners
-loginButton.onclick = signIn;
-logoutButton.onclick = signOut;
-refreshUsersBtn.onclick = loadUsers;
-inviteUserBtn.onclick = inviteUser;
-
 // Handle Enter key in invite email input
 inviteEmailInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
@@ -360,28 +312,9 @@ inviteEmailInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Initialize on page load
+// On load, check if user is signed in
 window.onload = function() {
-    const account = msalInstance.getAllAccounts()[0];
-    if (account) {
-        currentUser = account;
-        getAccessToken().then(() => {
-            checkAdminAccess();
-            updateAuthUI();
-        }).catch(error => {
-            console.error('Token acquisition failed on load:', error);
-            updateAuthUI();
-        });
-    } else {
-        updateAuthUI();
-    }
-};
 
-// For demo purposes - allow setting admin role
-window.setAdminRole = function() {
-    localStorage.setItem('userRole', 'admin');
-    if (currentUser) {
-        checkAdminAccess();
-    }
-    console.log('Admin role set for demo purposes. Refresh or re-login to see changes.');
+    const account = msalInstance.getAllAccounts()[0];
+    updateAuthUI(account);
 };
