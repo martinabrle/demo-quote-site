@@ -5,8 +5,57 @@ body {
     margin: 0;
     height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+/* Navigation Menu */
+#top-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(17, 17, 17, 0.9);
+    border-bottom: 2px solid #39ff14;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    color: #39ff14;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 4px #39ff14;
+}
+
+.nav-link:hover {
+    background: rgba(57, 255, 20, 0.1);
+    border-color: #39ff14;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+
+.nav-link.active {
+    background: rgba(57, 255, 20, 0.2);
+    border-color: #39ff14;
 }
 
 #quote-container {
@@ -30,6 +79,286 @@ body {
   top: 20px;
   right: 30px;
   z-index: 1000;
+}
+
+/* User Management Styles */
+#main-content {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 20px;
+}
+
+.container {
+    background: rgba(17, 17, 17, 0.9);
+    border: 2px solid #39ff14;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+.container h1 {
+    color: #39ff14;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px #39ff14;
+}
+
+.management-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    border: 1px solid #39ff14;
+    border-radius: 6px;
+    background: rgba(57, 255, 20, 0.05);
+}
+
+.management-section h2 {
+    color: #39ff14;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    text-shadow: 0 0 5px #39ff14;
+}
+
+.section-controls {
+    margin-bottom: 20px;
+}
+
+.action-btn {
+    background: #111;
+    border: 2px solid #39ff14;
+    color: #39ff14;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 4px #39ff14;
+}
+
+.action-btn:hover {
+    background: rgba(57, 255, 20, 0.1);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.action-btn.primary {
+    background: rgba(57, 255, 20, 0.2);
+}
+
+.action-btn.danger {
+    border-color: #ff3939;
+    color: #ff3939;
+    text-shadow: 0 0 4px #ff3939;
+}
+
+.action-btn.danger:hover {
+    background: rgba(255, 57, 57, 0.1);
+    box-shadow: 0 0 10px rgba(255, 57, 57, 0.5);
+}
+
+.action-btn.small {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+.list-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #39ff14;
+    border-radius: 4px;
+    background: rgba(17, 17, 17, 0.8);
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.user-item:last-child {
+    border-bottom: none;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #39ff14;
+    margin-bottom: 5px;
+}
+
+.user-email {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+}
+
+.user-title {
+    color: #aaa;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.user-status {
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.user-status.enabled {
+    background: rgba(57, 255, 20, 0.2);
+    color: #39ff14;
+}
+
+.user-status.disabled {
+    background: rgba(255, 57, 57, 0.2);
+    color: #ff3939;
+}
+
+.user-actions {
+    margin-left: 20px;
+}
+
+.invite-form {
+    display: grid;
+    gap: 20px;
+    max-width: 500px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #39ff14;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    background: #111;
+    border: 2px solid #39ff14;
+    color: #39ff14;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+.role-item {
+    padding: 15px;
+    border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+    color: #ccc;
+}
+
+.role-item:last-child {
+    border-bottom: none;
+}
+
+.role-item strong {
+    color: #39ff14;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #39ff14;
+    font-size: 1.2rem;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #aaa;
+    font-style: italic;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    color: #ff3939;
+}
+
+.auth-message {
+    text-align: center;
+    padding: 40px;
+    color: #39ff14;
+    font-size: 1.2rem;
+    border: 2px solid #39ff14;
+    border-radius: 8px;
+    background: rgba(57, 255, 20, 0.1);
+}
+
+.error-message {
+    background: rgba(255, 57, 57, 0.2);
+    border: 2px solid #ff3939;
+    color: #ff3939;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.success-message {
+    background: rgba(57, 255, 20, 0.2);
+    border: 2px solid #39ff14;
+    color: #39ff14;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #main-content {
+        margin-top: 70px;
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+    
+    .user-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .user-actions {
+        margin-left: 0;
+        align-self: flex-end;
+    }
+    
+    .nav-links {
+        gap: 15px;
+    }
+    
+    .nav-link {
+        font-size: 1rem;
+        padding: 6px 12px;
+    }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');

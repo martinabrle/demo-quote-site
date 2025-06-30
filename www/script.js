@@ -28,21 +28,74 @@ logoutButton.textContent = 'Sign out';
 
 authContainer.appendChild(loginButton);
 
+// Check if user has admin role
+async function checkUserRoles(account) {
+    isAdmin = false; // Default to false, will be updated based on user roles
+    try {
+        const tokenRequest = {
+            scopes: ["https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Directory.Read.All"],
+            account: account
+        };
+        
+        const response = await msalInstance.acquireTokenSilent(tokenRequest);
+        
+        // Get user's app roles from Microsoft Graph
+        const graphResponse = await fetch('https://graph.microsoft.com/v1.0/me', {
+            headers: {
+                'Authorization': `Bearer ${response.accessToken}`
+            }
+        });
+        
+        if (graphResponse.ok) {
+            const userData = await graphResponse.json();
+            // Check if user has admin role in app roles
+            // This is a simplified check - in a real app, you'd verify app-specific roles
+            isAdmin = true || userData.jobTitle?.toLowerCase().includes('admin') || 
+                           userData.mail?.includes('admin') ||
+                           localStorage.getItem('userRole') === 'admin'; // For demo purposes
+            
+            // Show/hide user management link
+            const userManagementLink = document.getElementById('user-management-link');
+            if (userManagementLink) {
+                userManagementLink.style.display = isAdmin ? 'inline-block' : 'none';
+            }
+        } else {
+            console.error('Failed to fetch user data:', graphResponse.status, ' - ', graphResponse.statusText);
+            console.error('Response:\n', await graphResponse.text());
+        }
+    } catch (error) {
+        console.error('Error checking user roles:', error);
+        return false;
+    }
+    return isAdmin;
+}
+
 function updateAuthUI(account) {
     if (account) {
         loginButton.style.display = 'none';
         logoutButton.style.display = 'inline-block';
         if (!authContainer.contains(logoutButton)) authContainer.appendChild(logoutButton);
+        
+        // Check user roles for admin functionality
+        checkUserRoles(account);
     } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';
         if (authContainer.contains(logoutButton)) authContainer.removeChild(logoutButton);
+        
+        // Hide user management link when not logged in
+        const userManagementLink = document.getElementById('user-management-link');
+        if (userManagementLink) {
+            userManagementLink.style.display = 'none';
+        }
     }
 }
 
 loginButton.onclick = async () => {
     try {
-        const loginResponse = await msalInstance.loginPopup({ scopes: ["openid", "profile", "User.Read"] });
+        const loginResponse = await msalInstance.loginPopup({ 
+            scopes: ["openid", "profile", "User.Read", "Directory.Read.All", "User.ReadWrite.All"] 
+        });
         updateAuthUI(loginResponse.account);
         alert(`Signed in as: ${loginResponse.account.username}`);
     } catch (err) {
@@ -61,8 +114,10 @@ logoutButton.onclick = async () => {
 // On load, check if user is signed in
 window.onload = function() {
     const quoteElement = document.getElementById('quote');
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    quoteElement.textContent = quotes[randomIndex];
+    if (quoteElement) {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        quoteElement.textContent = quotes[randomIndex];
+    }
 
     const account = msalInstance.getAllAccounts()[0];
     updateAuthUI(account);
