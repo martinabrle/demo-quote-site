@@ -30,11 +30,11 @@ const userRoleSelect = document.getElementById('user-role');
 // Create auth buttons
 const loginButton = document.createElement('button');
 loginButton.textContent = 'Sign in with Microsoft';
-loginButton.className = 'action-btn primary';
+//TODO: loginButton.className = 'action-btn primary';
 
 const logoutButton = document.createElement('button');
 logoutButton.textContent = 'Sign out';
-logoutButton.className = 'action-btn';
+//TODO: logoutButton.className = 'action-btn';
 
 authContainer.appendChild(loginButton);
 
