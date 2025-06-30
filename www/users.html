@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - Random Quote</title>
+    <title>Random Quote</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 </head>
@@ -12,13 +12,11 @@
         <div class="nav-container">
             <div class="nav-links">
                 <a href="index.html" class="nav-link">Home</a>
-                <a href="users.html" class="nav-link active">User Management</a>
+                <a href="users.html" id="user-management-link" class="nav-link active">User Management</a>
             </div>
         </div>
     </nav>
-    
-    <div id="main-content">
-        <div class="container">
+    <div id="quote-container">
             <h1>User Management</h1>
             
             <div id="auth-check" class="auth-message">
@@ -69,10 +67,9 @@
                     </div>
                 </section>
             </div>
-        </div>
+        
     </div>
-    
     <div id="auth-container"></div>
-    <script src="users.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
