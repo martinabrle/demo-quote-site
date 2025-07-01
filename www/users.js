@@ -27,7 +27,7 @@ logoutButton.textContent = 'Sign out';
 
 const refreshUsersBtn = document.getElementById('refresh-users-btn');
 const inviteUserBtn = document.getElementById('invite-user-btn');
-
+const inviteEmailInput = document.getElementById('invite-email');
 
 authContainer.appendChild(loginButton);
 
