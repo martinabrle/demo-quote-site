@@ -62,6 +62,7 @@ async function checkUserAccess(account) {
             if (userManagementLink) {
                 userManagementLink.style.display = isAdmin ? 'inline-block' : 'none';
             }
+            await loadUsers();
         } else {
             console.error('Failed to fetch user data:', graphResponse.status, ' - ', graphResponse.statusText);
             console.error('Response:\n', await graphResponse.text());
